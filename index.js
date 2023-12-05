@@ -1,6 +1,8 @@
 //jshint esversion:9
+const path = require("path");
 const dotenv = require("dotenv");
 dotenv.config({ path: "./.env" });
+process.env.ROOT_DIR = path.resolve(__dirname);
 
 const db = require("./database/models");
 const app = require("./app");
