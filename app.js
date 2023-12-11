@@ -5,6 +5,9 @@ const fs = require("fs");
 const path = require("path");
 const morgan = require("morgan");
 const userRoutes = require("./routes/User");
+const departmentRoutes = require("./routes/HR/departments");
+const positionRoutes = require("./routes/HR/positions");
+const employeeRoutes = require("./routes/HR/employees");
 const systemRoutes = require("./routes/System");
 
 morgan.token("json", (req, res) => {
@@ -33,6 +36,9 @@ app.use(cors());
 app.options("*", cors());
 
 app.use("/api/v1/", userRoutes);
+app.use("/api/v1/hr", departmentRoutes);
+app.use("/api/v1/hr", positionRoutes);
+app.use("/api/v1/hr", employeeRoutes);
 app.use("/api/v1/system", systemRoutes);
 
 module.exports = app;

@@ -46,6 +46,12 @@ exports.login = async (req, res) => {
 				message: "incorrect email or password",
 			});
 		}
+		if (!user.status) {
+			return res.status(400).json({
+				status: "fail",
+				message: "Access by user unauthorized",
+			});
+		}
 
 		sendToken(user, 200, res);
 	} catch (error) {
@@ -58,7 +64,7 @@ exports.login = async (req, res) => {
 };
 
 exports.signup = async (req, res) => {
-	const { username, email } = req.body;
+	const { username, email, role, employeeId } = req.body;
 	if (!username || !email) {
 		return res.status(400).json({
 			status: "bad request",
@@ -72,7 +78,9 @@ exports.signup = async (req, res) => {
 			username,
 			password: userpassword,
 			email,
-			role: "user",
+			employeeId,
+			role,
+			createdBy: req.headers.userId || req.headers.userid,
 		});
 		res.status(201).json({
 			status: "Success",
