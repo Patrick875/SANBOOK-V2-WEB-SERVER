@@ -6,7 +6,7 @@ const {
 	SalaryDeduction,
 	Department,
 	Employee,
-} = require("../database/models");
+} = require("../../database/models");
 exports.getAll = async (req, res) => {
 	try {
 		const allPos = await Position.findAll({

@@ -7,7 +7,7 @@ const {
 	getOne,
 	deleteAll,
 	deleteOne,
-} = require("../../controllers/employeesController");
+} = require("../../controllers/HR/employeesController");
 
 router.post("/employees/", create);
 router.get("/employees/", getAll);

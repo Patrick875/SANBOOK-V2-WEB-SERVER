@@ -10,9 +10,16 @@ module.exports = (sequelize, DataTypes) => {
 		{
 			employeeId: DataTypes.INTEGER,
 			title: DataTypes.STRING,
+			type: DataTypes.ENUM(
+				"Leave",
+				"Advance on Payment",
+				"Appointment",
+				"Other"
+			),
 			description: DataTypes.STRING,
 			status: DataTypes.ENUM("submited", "approved", "denied"),
 			submittedon: DataTypes.STRING,
+			cc: DataTypes.STRING,
 			updatedon: DataTypes.STRING,
 			createdBy: DataTypes.INTEGER,
 		},

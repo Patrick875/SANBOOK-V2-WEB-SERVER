@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
 			title: DataTypes.STRING,
 			description: DataTypes.STRING,
 			issuedon: DataTypes.STRING,
+			cc: DataTypes.STRING,
 			updatedon: DataTypes.STRING,
 			createdBy: DataTypes.INTEGER,
 		},

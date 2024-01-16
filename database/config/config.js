@@ -5,5 +5,6 @@ module.exports = {
 		dialect: "postgres",
 		user: "postgres",
 		password: "12345",
+		logging: false,
 	},
 };

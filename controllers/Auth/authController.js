@@ -1,8 +1,9 @@
 //jshint esversion:9
-const { User } = require("../database/models");
+const { User, Employee, Position } = require("../../database/models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
+const { generateRandomString } = require("../../utils/randomStringGenerator");
 
 const signToken = (id) =>
 	jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -30,6 +31,7 @@ exports.login = async (req, res) => {
 	try {
 		const user = await User.findOne({
 			where: { [Op.or]: [{ username }, { email: username }] },
+			include: [{ model: Employee, include: [{ model: Position }] }],
 			attributes: {
 				exclude: ["createdAt", "updatedAt"],
 			},
@@ -101,6 +103,41 @@ exports.signup = async (req, res) => {
 		res.status(400).json({
 			status: "request failed",
 			message: "error creating user",
+		});
+	}
+};
+
+exports.resetPassword = async (req, res) => {
+	const { user } = req.body;
+	if (!user) {
+		return res.status(400).json({
+			status: "failed",
+			message: "please provide your email or username",
+		});
+	}
+	try {
+		const foundUser = await User.findOne({
+			where: { [Op.or]: [{ username: user }, { email: user }] },
+		});
+		if (!foundUser) {
+			return res.status(404).json({
+				status: "request failed",
+				message: "User not found",
+			});
+		}
+		const newRandomPassword = "password";
+		const hashedNew = await bcrypt.hash(newRandomPassword, 12);
+		await User.update({ password: hashedNew }, { where: { id: foundUser.id } });
+
+		res.status(203).json({
+			status: "success",
+			message: "password reset",
+		});
+	} catch (err) {
+		console.log(err);
+		return res.status(500).json({
+			status: "server error",
+			message: "server error",
 		});
 	}
 };

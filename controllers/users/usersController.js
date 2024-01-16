@@ -1,6 +1,6 @@
 //jshint esversion:9
 const { Op } = require("sequelize");
-const { User, Employee, Position } = require("../database/models");
+const { User, Employee, Position } = require("../../database/models");
 
 exports.getAllUsers = async (req, res) => {
 	try {

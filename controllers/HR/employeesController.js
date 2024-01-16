@@ -1,9 +1,23 @@
 //jshint esversion:9
-const { Position, Employee, User, Department } = require("../database/models");
+const {
+	Position,
+	Employee,
+	EmployeeContract,
+	SalaryAdvantage,
+	SalaryDeduction,
+	User,
+	Department,
+} = require("../../database/models");
 exports.getAll = async (req, res) => {
 	try {
 		const allEms = await Employee.findAll({
-			include: [{ model: Department }, { model: Position }],
+			include: [
+				{ model: Department },
+				{
+					model: Position,
+					include: [{ model: SalaryAdvantage }, { model: SalaryDeduction }],
+				},
+			],
 		});
 		return res.status(200).json({
 			status: "success",
@@ -19,16 +33,21 @@ exports.getAll = async (req, res) => {
 	}
 };
 exports.getOne = async (req, res) => {
-	console.log(req);
 	const { id } = req.params;
 	try {
 		const employee = await Employee.findOne({
 			where: { id },
 			include: [
 				{ model: Department },
+				{ model: EmployeeContract },
 				{
 					model: Position,
-					include: [{ model: Position, as: "reportingPosition" }],
+					include: [
+						{ model: Position, as: "reportingPosition" },
+						{ model: SalaryAdvantage },
+						{ model: SalaryDeduction },
+						{ model: Department },
+					],
 				},
 			],
 		});

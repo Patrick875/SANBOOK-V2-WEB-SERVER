@@ -6,7 +6,7 @@ const {
 	getAll,
 	deleteAll,
 	deleteOne,
-} = require("../../controllers/positionsController");
+} = require("../../controllers/HR/positionsController");
 
 router.post("/positions/", create);
 router.get("/positions", getAll);

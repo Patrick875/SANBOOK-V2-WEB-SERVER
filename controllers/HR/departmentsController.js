@@ -1,5 +1,5 @@
 //jshint esversion:9
-const { Department } = require("../database/models");
+const { Department } = require("../../database/models");
 exports.getAll = async (req, res) => {
 	try {
 		const allDeps = await Department.findAll();
