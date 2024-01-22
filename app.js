@@ -17,6 +17,8 @@ const employeeRequestsRouter = require("./routes/HR/requests");
 const itemCategoriesRouter = require("./routes/Stock/categories");
 const unitsRouter = require("./routes/Stock/units");
 const itemsRouter = require("./routes/Stock/items");
+const purchaseorderRouter = require("./routes/Stock/purchaseorders");
+const receiveVoucherRouter = require("./routes/Stock/receivevouchers");
 
 morgan.token("json", (req, res) => {
 	return JSON.stringify({
@@ -51,6 +53,8 @@ app.use("/api/v1/hr", employeeRoutes);
 app.use("/api/v1/hr", employeeRequestsRouter);
 app.use("/api/v1/hr", employeeWarningRoutes);
 app.use("/api/v1/hr", contractRouter);
+app.use("/api/v1/stock", receiveVoucherRouter);
+app.use("/api/v1/stock", purchaseorderRouter);
 app.use("/api/v1/stock", storesRouter);
 app.use("/api/v1/stock", itemCategoriesRouter);
 app.use("/api/v1/stock", unitsRouter);

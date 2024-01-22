@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
 			this.belongsTo(models.StockUnit, { foreignKey: "mainunit" });
 			this.hasMany(models.ItemQuantity, { foreignKey: "item" });
 			this.hasMany(models.ItemPrice, { foreignKey: "item" });
+			this.hasMany(models.StockPurchaseOrderDetail, { foreignKey: "ItemId" });
 		}
 	}
 	Item.init(
@@ -17,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
 			store: DataTypes.INTEGER,
 			mainunit: DataTypes.INTEGER,
 			price: DataTypes.FLOAT,
-
 			createdBy: DataTypes.INTEGER,
 		},
 		{ sequelize, tableName: "items", modelName: "Item" }

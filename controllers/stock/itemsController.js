@@ -36,19 +36,17 @@ exports.getAll = async (req, res) => {
 			});
 		} else {
 			const whereConditions = {};
-			// Check if 'item' is present in the query and not an empty string
-			if (req.query.item !== undefined && req.query.item !== "") {
-				whereConditions.name = { [Op.iLike]: `%${req.query.item}%` };
-			}
-			// 			where: {
-			//     title: { [Op.iLike]: '%The Fox & The Hound%' },
-			//   },
+
 			// Check if 'store' is present in the query and not an empty string
 			if (req.query.store !== undefined && req.query.store !== "") {
 				whereConditions.store = { [Op.eq]: req.query.store };
 			}
 			// Check if 'category' is present in the query and not an empty string
-			if (req.query.category !== undefined && req.query.category !== "") {
+			if (
+				req.query.category !== undefined &&
+				req.query.category !== "" &&
+				req.query.category != 0
+			) {
 				whereConditions.category = { [Op.eq]: req.query.category };
 			}
 			// Use findAll with the where conditions
@@ -74,7 +72,7 @@ exports.create = async (req, res) => {
 	if (!name || !store || !category || !mainunit) {
 		return res.status(400).json({
 			status: "Request failed",
-			message: "name , store, category, mainunit and price are required",
+			message: "name , store, category, and mainunit are required",
 		});
 	}
 	try {
