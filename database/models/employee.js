@@ -70,6 +70,7 @@ module.exports = (sequelize, DataTypes) => {
 			},
 			department: DataTypes.INTEGER,
 			position: DataTypes.INTEGER,
+			profile: DataTypes.STRING,
 			employmenttype: {
 				type: DataTypes.STRING,
 				allowNull: false,

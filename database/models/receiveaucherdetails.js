@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
 		static associate(models) {
 			this.belongsTo(models.ReceiveVoucher, {
 				foreignKey: "receiveVoucherId",
+				onDelete: "CASCADE",
 			});
 			this.belongsTo(models.Item, { foreignKey: "item" });
 		}

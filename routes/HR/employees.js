@@ -8,8 +8,9 @@ const {
 	deleteAll,
 	deleteOne,
 } = require("../../controllers/HR/employeesController");
+const { imageUploader } = require("../../services/imageUploader");
 
-router.post("/employees/", create);
+router.post("/employees/", imageUploader, create);
 router.get("/employees/", getAll);
 router.get("/employees/:id", getOne);
 router.delete("/employees/", deleteAll);

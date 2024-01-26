@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
 		{
 			ItemId: DataTypes.INTEGER,
 			stockPurchaseOrderId: DataTypes.INTEGER,
-			currentQuantity: DataTypes.INTEGER,
+			currentQuantity: DataTypes.INTEGER, //update to float
 			requestQuantity: DataTypes.INTEGER,
 			unitPrice: DataTypes.INTEGER,
 			unit: DataTypes.STRING,

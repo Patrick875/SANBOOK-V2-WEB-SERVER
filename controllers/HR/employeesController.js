@@ -8,70 +8,57 @@ const {
 	User,
 	Department,
 } = require("../../database/models");
-exports.getAll = async (req, res) => {
-	try {
-		const allEms = await Employee.findAll({
-			include: [
-				{ model: Department },
-				{
-					model: Position,
-					include: [{ model: SalaryAdvantage }, { model: SalaryDeduction }],
-				},
-			],
-		});
-		return res.status(200).json({
-			status: "success",
-			data: allEms,
-			length: allEms.length,
-		});
-	} catch (err) {
-		console.log(err);
-		return res.status(500).json({
-			status: "failed",
-			message: "All getting all employees",
-		});
-	}
-};
-exports.getOne = async (req, res) => {
+const { asyncWrapper } = require("../../utils/asyncWrapper");
+const createController = require("../controllerFactory");
+exports.getAll = asyncWrapper(async (req, res) => {
+	const allEms = await Employee.findAll({
+		include: [
+			{ model: Department },
+			{
+				model: Position,
+				include: [{ model: SalaryAdvantage }, { model: SalaryDeduction }],
+			},
+		],
+	});
+	return res.status(200).json({
+		status: "success",
+		data: allEms,
+		length: allEms.length,
+	});
+});
+exports.getOne = asyncWrapper(async (req, res) => {
 	const { id } = req.params;
-	try {
-		const employee = await Employee.findOne({
-			where: { id },
-			include: [
-				{ model: Department },
-				{ model: EmployeeContract },
-				{
-					model: Position,
-					include: [
-						{ model: Position, as: "reportingPosition" },
-						{ model: SalaryAdvantage },
-						{ model: SalaryDeduction },
-						{ model: Department },
-					],
-				},
-			],
-		});
 
-		if (!employee) {
-			return res.status(404).json({
-				status: "not found",
-				message: "employee not found",
-			});
-		}
-		return res.status(200).json({
-			status: "success",
-			data: employee,
-		});
-	} catch (err) {
-		console.log(err);
-		return res.status(500).json({
-			status: "failed",
-			message: "Error geting employee",
+	const employee = await Employee.findOne({
+		where: { id },
+		include: [
+			{ model: Department },
+			{ model: EmployeeContract },
+			{
+				model: Position,
+				include: [
+					{ model: Position, as: "reportingPosition" },
+					{ model: SalaryAdvantage },
+					{ model: SalaryDeduction },
+					{ model: Department },
+				],
+			},
+		],
+	});
+
+	if (!employee) {
+		return res.status(404).json({
+			status: "not found",
+			message: "employee not found",
 		});
 	}
-};
+	return res.status(200).json({
+		status: "success",
+		data: employee,
+	});
+});
 
-exports.create = async (req, res) => {
+exports.create = asyncWrapper(async (req, res) => {
 	const {
 		fullname,
 		birthdate,
@@ -89,6 +76,7 @@ exports.create = async (req, res) => {
 		emergencyrelation,
 		department,
 		position,
+		profileImage,
 		employmenttype,
 		createdby,
 	} = req.body;
@@ -107,47 +95,40 @@ exports.create = async (req, res) => {
 		});
 	}
 
-	try {
-		const users = await User.findAll();
+	const users = await User.findAll();
 
-		const regId = "0000" + users[users.length - 1].id + 1;
-		const em = await Employee.create({
-			fullname,
-			birthdate,
-			gender,
-			regId,
-			maritalstatus,
-			identification,
-			nationality,
-			residence_province,
-			residence_district,
-			telephone,
-			whatsapphone,
-			otherphone,
-			email,
-			emergencyphone,
-			emergencyrelation,
-			department,
-			position,
-			employmenttype,
-			createdby,
-			createdBy: req.headers.userId || req.headers.userid,
-		});
+	const regId = "0000" + users[users.length - 1].id + 1;
+	const em = await Employee.create({
+		fullname,
+		birthdate,
+		gender,
+		regId,
+		maritalstatus,
+		identification,
+		nationality,
+		residence_province,
+		residence_district,
+		telephone,
+		whatsapphone,
+		otherphone,
+		email,
+		emergencyphone,
+		emergencyrelation,
+		department,
+		position,
+		employmenttype,
+		createdby,
+		profile: profileImage,
+		createdBy: req.headers.userId || req.headers.userid,
+	});
 
-		return res.status(201).json({
-			status: "Employee created successfuly",
-			data: em,
-		});
-	} catch (err) {
-		console.log(err);
-		return res.status(400).json({
-			status: "failed",
-			message: "error creating Position",
-		});
-	}
-};
+	return res.status(201).json({
+		status: "Employee created successfuly",
+		data: em,
+	});
+});
 
-exports.deleteOne = async (req, res) => {
+exports.deleteOne = asyncWrapper(async (req, res) => {
 	const { emId } = req.params;
 	if (!emId) {
 		return res.status(400).json({
@@ -155,26 +136,9 @@ exports.deleteOne = async (req, res) => {
 			message: "please provide the id of the position",
 		});
 	}
-	try {
-		const em = await Employee.findByPk(depId);
-		await em.destroy({ cascade: true });
-	} catch (err) {
-		console.log(err);
-		return res.status(500).json({
-			status: "server error",
-			message: "error deleting employee",
-		});
-	}
-};
 
-exports.deleteAll = async (req, res) => {
-	try {
-		await Employee.truncate({ cascade: true });
-	} catch (err) {
-		console.log(err);
-		return res.status(500).json({
-			status: "server error",
-			message: "error deleting employees",
-		});
-	}
-};
+	const em = await Employee.findByPk(depId);
+	await em.destroy({ cascade: true });
+});
+
+exports.deleteAll = asyncWrapper(createController(Employee).deleteAll);

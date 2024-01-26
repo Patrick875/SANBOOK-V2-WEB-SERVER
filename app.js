@@ -19,6 +19,8 @@ const unitsRouter = require("./routes/Stock/units");
 const itemsRouter = require("./routes/Stock/items");
 const purchaseorderRouter = require("./routes/Stock/purchaseorders");
 const receiveVoucherRouter = require("./routes/Stock/receivevouchers");
+const currentStockRouter = require("./routes/Stock/currentstock");
+const supplierRouter = require("./routes/Stock/supplier");
 
 morgan.token("json", (req, res) => {
 	return JSON.stringify({
@@ -41,11 +43,12 @@ const app = express();
 app.use(morgan("dev"));
 app.use(morgan(":json", { stream: accessLogs }));
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(cors());
 app.options("*", cors());
 
 app.use("/api/v1/", userRoutes);
+
 app.use("/api/v1/hr", hrdashboardRoutes);
 app.use("/api/v1/hr", departmentRoutes);
 app.use("/api/v1/hr", positionRoutes);
@@ -59,6 +62,8 @@ app.use("/api/v1/stock", storesRouter);
 app.use("/api/v1/stock", itemCategoriesRouter);
 app.use("/api/v1/stock", unitsRouter);
 app.use("/api/v1/stock", itemsRouter);
+app.use("/api/v1/stock", currentStockRouter);
+app.use("/api/v1/stock", supplierRouter);
 app.use("/api/v1/system", systemRoutes);
 
 module.exports = app;

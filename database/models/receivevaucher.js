@@ -7,10 +7,10 @@ module.exports = (sequelize, DataTypes) => {
 			this.belongsTo(models.StockPurchaseOrder, {
 				foreignKey: "stockPurchaseOrderId",
 			});
+			this.belongsTo(models.SupplierList, { foreignKey: "supplierList" });
 			// this.belongsTo(models.User, { foreignKey: "userId" });
 			this.hasMany(models.ReceiveVoucherDetail, {
 				foreignKey: "receiveVoucherId",
-				onDelete: "CASCADE",
 			});
 		}
 	}
@@ -21,6 +21,8 @@ module.exports = (sequelize, DataTypes) => {
 			total: DataTypes.FLOAT,
 			receiveVoucherId: DataTypes.STRING,
 			stockPurchaseOrderId: DataTypes.INTEGER,
+			supplierList: DataTypes.INTEGER,
+			suppliedBy: DataTypes.STRING,
 			approvals: DataTypes.ARRAY(DataTypes.STRING),
 		},
 		{

@@ -1,6 +1,7 @@
 const {
 	ItemPrice,
 	Item,
+	BaughtItem,
 	StockPurchaseOrder,
 	StockPurchaseOrderDetail,
 } = require("../../database/models");
@@ -45,7 +46,7 @@ exports.getOne = asyncWrapper(async (req, res) => {
 			message: "purchase order id is required !!!!",
 		});
 	}
-	const data = await StockPurchaseOrder.findAll({
+	const data = await StockPurchaseOrder.findOne({
 		where: { id },
 		include: [
 			{
@@ -134,7 +135,7 @@ exports.create = asyncWrapper(async (req, res) => {
 				where: { value: element.price, item: element.id },
 			});
 
-			let stockDetail = await StockPurchaseOrderDetail.create({
+			await StockPurchaseOrderDetail.create({
 				ItemId: element.id,
 				stockPurchaseOrderId: pOrder.id,
 				currentQuantity: itemValue ? itemValue.quantity : 0,
@@ -151,7 +152,8 @@ exports.create = asyncWrapper(async (req, res) => {
 });
 
 exports.update = asyncWrapper(async (req, res) => {
-	const { id, order } = req.body;
+	const { id } = req.params;
+	const { order, total } = req.body;
 	if (!id) {
 		return res.status(400).json({
 			status: "bad request",
@@ -165,28 +167,62 @@ exports.update = asyncWrapper(async (req, res) => {
 			message: "purchase order not found",
 		});
 	}
+	await StockPurchaseOrder.update(
+		{ total },
+		{ where: { id: purchaseOrder.id } }
+	);
 	if (order) {
 		await StockPurchaseOrderDetail.destroy({
 			where: { stockPurchaseOrderId: id },
 		});
 		for (let element of req.body.order) {
-			let itemValue = await ItemPrice.findOne({
-				where: { value: element.price, item: element.id },
+			let itemValue = await BaughtItem.findOne({
+				where: { price: element.unitPrice, item: element.ItemId },
 			});
 
+			console.log("this is item", itemValue);
+
 			await StockPurchaseOrderDetail.create({
-				ItemId: element.id,
-				stockPurchaseOrderId: pOrder.id,
-				currentQuantity: itemValue ? itemValue.quantity : 0,
-				requestQuantity: element.quantity,
-				unitPrice: element.price,
-				unit: element.unit,
+				ItemId: element.ItemId,
+				stockPurchaseOrderId: purchaseOrder.id,
+				currentQuantity:
+					itemValue && !isNaN(itemValue.quantity)
+						? Number.parseInt(itemValue.quantity)
+						: 0,
+				//currentQuantity: 0,
+				requestQuantity: Number(element.requestQuantity),
+				unitPrice: element.unitPrice,
+				// mainunit: element.mainunit,
 			});
 		}
 	}
+	const data = await StockPurchaseOrder.findOne({
+		where: { id },
+		include: [
+			{
+				model: StockPurchaseOrderDetail,
+				attributes: {
+					exclude: [
+						"createdAt",
+						"updatedAt",
+						"stockPurchaseOrderId",
+						"stockItemId",
+					],
+				},
+				include: [
+					{
+						model: Item,
+						attributes: { exclude: ["createdAt", "updatedAt"] },
+					},
+				],
+			},
+		],
+		attributes: { exclude: ["createdAt", "updatedAt"] },
+	});
 
 	return res.status(203).json({
 		status: "success",
+		data,
 		message: "Order updated successfuly",
 	});
 });
