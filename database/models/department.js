@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
 			// define association here
 			this.belongsTo(models.User, { foreignKey: "createdby" });
 			this.hasMany(models.Position, { foreignKey: "department" });
+			this.hasMany(models.CostingCenter, { foreignKey: "department" });
 		}
 	}
 	Department.init(

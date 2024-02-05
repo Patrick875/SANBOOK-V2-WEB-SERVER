@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
 			supplier: { type: DataTypes.INTEGER },
 			date: DataTypes.STRING,
 			total: DataTypes.FLOAT,
+			supplierListId: DataTypes.STRING,
 		},
 		{ sequelize, tableName: "supplierlists", modelName: "SupplierList" }
 	);

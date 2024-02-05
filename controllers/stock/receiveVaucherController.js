@@ -13,6 +13,7 @@ const {
 } = require("../../database/models");
 const { generateId } = require("../../utils/functions.js");
 const createController = require("../controllerFactory.js");
+const { Op } = require("sequelize");
 
 const adaptElement = (element) => {
 	let newElement = { ...element };
@@ -23,7 +24,9 @@ const adaptElement = (element) => {
 	return newElement;
 };
 const updateBaughtItemTable = async (element, type) => {
-	const newElement = adaptElement(element);
+	const newElement = Object.keys(element).includes("unitPrice")
+		? element
+		: adaptElement(element);
 	let itemValue = await BaughtItem.findOne({
 		where: { price: newElement.unitPrice, item: newElement.ItemId },
 	});
@@ -82,6 +85,7 @@ exports.create = asyncWrapper(async (req, res) => {
 	//purchase side
 	const { receive } = data;
 	const { purchase } = data;
+	const { date } = data;
 
 	// we get the id of the purchase order from the first object in the data array
 
@@ -108,7 +112,7 @@ exports.create = asyncWrapper(async (req, res) => {
 	const ROCID = await generateId("RV", ReceiveVoucher);
 
 	const reveiveVoucher = await ReceiveVoucher.create({
-		date: new Date().toUTCString(),
+		date: date || new Date().toUTCString(),
 		stockPurchaseOrderId: stockPurchaseOrderId,
 		receiveVoucherId: ROCID,
 		total,
@@ -179,8 +183,7 @@ exports.addFromSupplier = asyncWrapper(async (req, res) => {
 				"the request should be a JSON object and have property named data",
 		});
 	}
-	const { items, supplierId } = req.body.data;
-	console.log("request body", req.body);
+	const { items, supplierId, date } = req.body.data;
 
 	if (!items || items.length === 0) {
 		return res.status(400).json({
@@ -208,17 +211,19 @@ exports.addFromSupplier = asyncWrapper(async (req, res) => {
 		});
 	}
 	const ROCID = await generateId("RV", ReceiveVoucher);
+	const SUPLID = await generateId("SP", SupplierList);
 
 	//create a supplier list using supplier key on req.body.supplier
 	const supplierList = await SupplierList.create({
 		supplier: supplier.id,
 		total,
-		date: new Date().toUTCString(),
+		supplierListId: SUPLID,
+		date: date || new Date().toUTCString(),
 	});
 	//create a receive vaucher with the supplierList Id
 
 	const receiveVoucher = await ReceiveVoucher.create({
-		date: new Date().toUTCString(),
+		date: date || new Date().toUTCString(),
 		supplierList: supplierList.id,
 		receiveVoucherId: ROCID,
 		total,
@@ -256,8 +261,6 @@ exports.update = asyncWrapper(async (req, res) => {
 	const { id } = req.params;
 	const { purchase, receive, totalRec, totalPurc, supplierList } =
 		req.body.data;
-
-	console.log("request data--data", req.body.data);
 
 	if (!id) {
 		return res.status(400).json({
@@ -367,7 +370,26 @@ exports.update = asyncWrapper(async (req, res) => {
 });
 
 exports.getAll = asyncWrapper(async (req, res) => {
+	const { page = 1, itemsPerPage = 10 } = req.query;
+	const orderArray = [["id", "DESC"]];
+	const { receive } = req.query;
+	let filterOptions = {};
+	if (receive !== undefined) {
+		filterOptions = {
+			where: {
+				receiveVoucherId: { [Op.substring]: receive },
+			},
+		};
+	}
+
+	const limit = parseInt(itemsPerPage, 10);
+	const offset = (parseInt(page, 10) - 1) * limit;
+
+	const length = await ReceiveVoucher.count();
 	const data = await ReceiveVoucher.findAll({
+		...filterOptions,
+		order: orderArray,
+
 		include: [
 			{
 				model: StockPurchaseOrder,
@@ -412,10 +434,12 @@ exports.getAll = asyncWrapper(async (req, res) => {
 				include: [{ model: Supplier }, { model: SupplierListItem }],
 			},
 		],
+		limit,
+		offset,
 		attributes: { exclude: ["stockPurchaseOrderId", "createdAt", "updatedAt"] },
 	});
 
-	return res.status(200).json({ status: "success", data });
+	return res.status(200).json({ status: "success", data, length });
 });
 
 exports.getOne = asyncWrapper(async (req, res) => {

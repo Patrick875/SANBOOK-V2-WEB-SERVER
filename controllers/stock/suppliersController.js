@@ -12,7 +12,6 @@ const {
 const includeArray = [
 	{
 		model: SupplierList,
-		include: [{ model: SupplierListItem, include: [{ model: Item }] }],
 	},
 ];
 

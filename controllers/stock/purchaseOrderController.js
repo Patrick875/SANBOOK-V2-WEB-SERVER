@@ -11,7 +11,21 @@ const createController = require("./../controllerFactory");
 const { Op } = require("sequelize");
 
 exports.getAll = asyncWrapper(async (req, res) => {
+	const { purchase } = req.query;
+	let filterOptions = {};
+	if (purchase !== undefined) {
+		// Use Op.substring to filter based on substring match
+		filterOptions = {
+			where: {
+				purchaseOrderId: {
+					[Op.substring]: purchase,
+				},
+			},
+		};
+	}
+
 	const data = await StockPurchaseOrder.findAll({
+		...filterOptions,
 		include: [
 			{
 				model: StockPurchaseOrderDetail,
@@ -123,7 +137,7 @@ exports.create = asyncWrapper(async (req, res) => {
 	}, 0);
 	const POID = await generateId("PO", StockPurchaseOrder);
 	const pOrder = await StockPurchaseOrder.create({
-		date: new Date(),
+		date: req.body.date || new Date().toUTCString(),
 		status: "PENDING",
 		purchaseOrderId: POID,
 		total,

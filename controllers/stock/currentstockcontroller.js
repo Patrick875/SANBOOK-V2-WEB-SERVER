@@ -50,7 +50,8 @@ exports.getAll = asyncWrapper(async (req, res) => {
 		["price", "ASC"], // Sort by price in ascending order
 	];
 
-	const whereConditions = {};
+	let filterOptions = {};
+	let whereConditions = {};
 
 	// Check if 'store' is present in the query and not an empty string
 	if (query.store !== undefined && query.store !== "") {
@@ -64,8 +65,16 @@ exports.getAll = asyncWrapper(async (req, res) => {
 	) {
 		whereConditions["$Item.category$"] = { [Op.eq]: query.category };
 	}
+	if (query.name == undefined || query.name === "") {
+		console.log("query-stuff", query.name);
+	} else {
+		whereConditions["$Item.name$"] = { [Op.substring]: query.name };
+	}
 
-	// Implement pagination using limit and offset
+	if (Object.keys(whereConditions).length !== 0) {
+		filterOptions = { where: whereConditions };
+	}
+
 	const limit = parseInt(itemsPerPage, 10);
 	const offset = (parseInt(page, 10) - 1) * limit;
 
@@ -76,7 +85,7 @@ exports.getAll = asyncWrapper(async (req, res) => {
 			exclude: alwaysExcludedAttributes,
 		},
 		order: orderArray,
-		where: whereConditions,
+		...filterOptions,
 		limit,
 		offset,
 	});
