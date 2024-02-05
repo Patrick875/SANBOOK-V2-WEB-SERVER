@@ -3,6 +3,15 @@ const costingCenterRequestController = require("./../../controllers/stock/costig
 
 const router = express.Router();
 
+router.post(
+	"/costingcenterrequests/approve",
+	costingCenterRequestController.approveRequest
+);
+router.post(
+	"/costingcenterrequests/cancel",
+	costingCenterRequestController.cancelRequest
+);
+
 router
 	.route("/costingcenterrequests")
 	.get(costingCenterRequestController.getAll)

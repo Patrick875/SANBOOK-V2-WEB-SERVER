@@ -4,12 +4,12 @@ module.exports = (sequelize, DataTypes) => {
 	class CostingCenterItem extends Model {
 		static associate(models) {
 			this.belongsTo(models.CostingCenter, { foreignKey: "costingcenter" });
-			this.belongsTo(models.BaughtItem, { foreignKey: "item" });
+			this.belongsTo(models.BaughtItem, { foreignKey: "baughtitem" });
 		}
 	}
 	CostingCenterItem.init(
 		{
-			item: DataTypes.INTEGER,
+			baughtitem: DataTypes.INTEGER,
 			quantity: DataTypes.FLOAT,
 			price: DataTypes.FLOAT,
 			unit: DataTypes.INTEGER,
