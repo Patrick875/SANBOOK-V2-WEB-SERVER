@@ -36,16 +36,28 @@ const includeAll = [
 ];
 
 exports.getAll = asyncWrapper(async (req, res) => {
+	const { center, status, page = 1, itemsPerPage = 10 } = req.query;
+
 	let whereConditions = {};
-	const { center } = req.query;
+	let filterOptions = {};
+	const limit = parseInt(itemsPerPage, 10);
+	const offset = (parseInt(page, 10) - 1) * limit;
 
 	if (center) {
-		whereConditions = { where: { costingcenter: center } };
+		whereConditions["costingcenter"] = center;
+	}
+	if (status) {
+		whereConditions["status"] = status;
 	}
 
+	if (Object.keys(whereConditions).length !== 0) {
+		filterOptions = { where: whereConditions };
+	}
 	const requests = await CostingCenterRequest.findAll({
 		include: [{ model: CostingCenter }],
-		...whereConditions,
+		...filterOptions,
+		limit,
+		offset,
 		include: includeAll,
 	});
 	return res.status(200).json({
@@ -71,9 +83,6 @@ exports.getOne = asyncWrapper(async (req, res) => {
 	});
 });
 exports.create = asyncWrapper(async (req, res) => {
-	// to create a stock transaction
-	// receive an array of baught items with quantities
-
 	const { center, items } = req.body;
 	if (!center) {
 		return res.status(400).json({
@@ -86,12 +95,13 @@ exports.create = asyncWrapper(async (req, res) => {
 		date: req.body.date || new Date().toUTCString(),
 	});
 
-	for (const item of items) {
+	const filteredItems = items.filter((item) => item.quantity !== null);
+	for (const item of filteredItems) {
 		await CostingCenterRequestItem.create({
-			itemsRequest: itemsRequest.id,
-			item: item.id,
+			request: itemsRequest.id,
+			baughtitem: item.id,
 			quantity: item.quantity,
-			unit: item.unit,
+			unit: !item.unit ? item.Item.mainunit : item.unit,
 			price: item.price || item.unitPrice,
 		});
 	}

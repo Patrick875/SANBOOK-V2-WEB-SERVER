@@ -24,6 +24,7 @@ const supplierRouter = require("./routes/Stock/supplier");
 const supplierListRouter = require("./routes/Stock/supplierLists");
 const costingCenterRouter = require("./routes/Stock/costingcenter");
 const costingCenterRequestRouter = require("./routes/Stock/costingcenterrequest");
+const stockHistoryRouter = require("./routes/Stock/history");
 
 morgan.token("json", (req, res) => {
 	return JSON.stringify({
@@ -70,6 +71,7 @@ app.use("/api/v1/stock", supplierRouter);
 app.use("/api/v1/stock", supplierListRouter);
 app.use("/api/v1/stock", costingCenterRouter);
 app.use("/api/v1/stock", costingCenterRequestRouter);
+app.use("/api/v1/stock", stockHistoryRouter);
 app.use("/api/v1/system", systemRoutes);
 
 module.exports = app;
