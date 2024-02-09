@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
 			this.belongsTo(models.Position, { foreignKey: "position" });
 			this.hasMany(models.EmployeeWarning, { foreignKey: "employeeId" });
 			this.hasMany(models.EmployeeContract, { foreignKey: "employee" });
+			this.hasOne(models.User, { foreignKey: "employeeId" });
 		}
 	}
 	Employee.init(

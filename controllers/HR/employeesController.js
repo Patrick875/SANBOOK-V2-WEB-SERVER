@@ -18,6 +18,7 @@ exports.getAll = asyncWrapper(async (req, res) => {
 				model: Position,
 				include: [{ model: SalaryAdvantage }, { model: SalaryDeduction }],
 			},
+			{ model: User, attributes: { exclude: ["password"] } },
 		],
 	});
 	return res.status(200).json({

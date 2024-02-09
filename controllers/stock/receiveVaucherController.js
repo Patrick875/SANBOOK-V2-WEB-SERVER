@@ -370,26 +370,41 @@ exports.update = asyncWrapper(async (req, res) => {
 });
 
 exports.getAll = asyncWrapper(async (req, res) => {
-	const { page = 1, itemsPerPage = 10 } = req.query;
+	const {
+		receive,
+		startDate,
+		endDate,
+		page = 1,
+		itemsPerPage = 10,
+	} = req.query;
 	const orderArray = [["id", "DESC"]];
-	const { receive } = req.query;
 	let filterOptions = {};
+	let whereConditions = {};
 	if (receive !== undefined) {
-		filterOptions = {
-			where: {
-				receiveVoucherId: { [Op.substring]: receive },
-			},
+		whereConditions = {
+			receiveVoucherId: { [Op.substring]: receive },
 		};
+	}
+	if (startDate && endDate && startDate != "" && endDate != "") {
+		const fromDate = new Date(startDate).toUTCString();
+		const toDate = new Date(endDate).toUTCString();
+		whereConditions = {
+			date: { [Op.gte]: fromDate, [Op.lte]: toDate },
+		};
+	}
+
+	if (Object.keys(whereConditions).length !== 0) {
+		filterOptions = { where: whereConditions };
 	}
 
 	const limit = parseInt(itemsPerPage, 10);
 	const offset = (parseInt(page, 10) - 1) * limit;
 
-	const length = await ReceiveVoucher.count();
+	const length = await ReceiveVoucher.count(filterOptions);
+
 	const data = await ReceiveVoucher.findAll({
 		...filterOptions,
 		order: orderArray,
-
 		include: [
 			{
 				model: StockPurchaseOrder,

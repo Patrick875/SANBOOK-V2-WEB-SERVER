@@ -11,7 +11,7 @@ const createController = require("./../controllerFactory");
 const { Op } = require("sequelize");
 
 exports.getAll = asyncWrapper(async (req, res) => {
-	const { purchase } = req.query;
+	const { purchase, page = 1, itemsPerPage = 10 } = req.query;
 	let filterOptions = {};
 	if (purchase !== undefined) {
 		// Use Op.substring to filter based on substring match
@@ -24,6 +24,10 @@ exports.getAll = asyncWrapper(async (req, res) => {
 		};
 	}
 
+	const length = await StockPurchaseOrder.count(filterOptions);
+
+	const limit = parseInt(itemsPerPage, 10);
+	const offset = (parseInt(page, 10) - 1) * limit;
 	const data = await StockPurchaseOrder.findAll({
 		...filterOptions,
 		include: [
@@ -45,11 +49,17 @@ exports.getAll = asyncWrapper(async (req, res) => {
 				],
 			},
 		],
+		offset,
+		limit,
 		attributes: { exclude: ["createdAt", "updatedAt"] },
 	});
-	return res
-		.status(200)
-		.json({ status: "success", message: "Purchase order  retrieved", data });
+
+	return res.status(200).json({
+		status: "success",
+		message: "Purchase order  retrieved",
+		data,
+		length,
+	});
 });
 
 exports.getOne = asyncWrapper(async (req, res) => {

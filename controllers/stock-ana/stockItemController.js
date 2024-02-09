@@ -55,6 +55,7 @@ const GetItems = asyncWrapper(async (req, res) => {
 				attributes: { exclude: ["createdAt", "updatedAt", "stockItemId"] },
 			},
 		],
+		group: ["store"],
 		order: [["id", "DESC"]],
 	});
 	return res.status(200).json({ status: "ok", data: items });
