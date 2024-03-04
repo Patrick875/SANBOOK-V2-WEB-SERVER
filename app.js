@@ -25,6 +25,9 @@ const supplierListRouter = require("./routes/Stock/supplierLists");
 const costingCenterRouter = require("./routes/Stock/costingcenter");
 const costingCenterRequestRouter = require("./routes/Stock/costingcenterrequest");
 const stockHistoryRouter = require("./routes/Stock/history");
+const roomBookingRouter = require("./routes/Reception/roomBookingRouter");
+const roomsRouter = require("./routes/Reception/roomsRouter");
+const roomTypesRouter = require("./routes/Reception/roomTypesRouter");
 
 morgan.token("json", (req, res) => {
 	return JSON.stringify({
@@ -73,5 +76,8 @@ app.use("/api/v1/stock", costingCenterRouter);
 app.use("/api/v1/stock", costingCenterRequestRouter);
 app.use("/api/v1/stock", stockHistoryRouter);
 app.use("/api/v1/system", systemRoutes);
+app.use("/api/v1/reception", roomBookingRouter);
+app.use("/api/v1/reception", roomsRouter);
+app.use("/api/v1/reception", roomTypesRouter);
 
 module.exports = app;

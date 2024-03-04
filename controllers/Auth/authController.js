@@ -103,7 +103,6 @@ exports.signup = asyncWrapper(async (req, res) => {
 		email,
 		employeeId,
 		status: true,
-		//role: employee.Department.role,
 		createdBy: req.headers.userId || req.headers.userid,
 	});
 	res.status(201).json({

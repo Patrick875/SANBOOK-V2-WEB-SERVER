@@ -2,16 +2,7 @@ const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
 	class Equivalence extends Model {
-		static associate(models) {
-			// this.belongsTo(models.StockUnit, {
-			// 	as: "equivalences", // Use the same alias as in StockUnit model
-			// 	foreignKey: "unitAId",
-			// });
-			// this.belongsTo(models.StockUnit, {
-			// 	as: "equivalences", // Use the same alias as in StockUnit model
-			// 	foreignKey: "unitBId",
-			// });
-		}
+		static associate(models) {}
 	}
 	Equivalence.init(
 		{
@@ -31,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
 		{
 			sequelize,
 			modelName: "Equivalence",
-			table: "unitequivalences",
+			table: "equivalences",
 		}
 	);
 
