@@ -28,6 +28,10 @@ const stockHistoryRouter = require("./routes/Stock/history");
 const roomBookingRouter = require("./routes/Reception/roomBookingRouter");
 const roomsRouter = require("./routes/Reception/roomsRouter");
 const roomTypesRouter = require("./routes/Reception/roomTypesRouter");
+const guestRouter = require("./routes/Reception/guestRouter");
+const serviceRouter = require("./routes/HotelServices/servicesRouter");
+const serviceCategoryRouter = require("./routes/HotelServices/serviceCategoriesRouter");
+const accountingCommonDataRouter = require("./routes/Accounting/commonData");
 
 morgan.token("json", (req, res) => {
 	return JSON.stringify({
@@ -79,5 +83,10 @@ app.use("/api/v1/system", systemRoutes);
 app.use("/api/v1/reception", roomBookingRouter);
 app.use("/api/v1/reception", roomsRouter);
 app.use("/api/v1/reception", roomTypesRouter);
+app.use("/api/v1/reception", guestRouter);
+app.use("/api/v1/services", serviceRouter);
+app.use("/api/v1/servicecategory", serviceCategoryRouter);
+app.use("/api/v1/accounting", serviceCategoryRouter);
+app.use("/api/v1/accounting", accountingCommonDataRouter);
 
 module.exports = app;

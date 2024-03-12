@@ -2,6 +2,9 @@ const { RoomRate } = require("../../../database/models");
 const { asyncWrapper } = require("../../../utils/asyncWrapper");
 const createController = require("../../controllerFactory");
 
+exports.getAll = asyncWrapper(async (req, res) => {
+	const rates = await RoomRate.findAll;
+});
 exports.update = asyncWrapper(async (req, res) => {
 	const { id } = req.params;
 

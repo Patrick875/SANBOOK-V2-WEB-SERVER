@@ -9,6 +9,8 @@ router
 	.post(roomBookingController.create)
 	.delete(roomBookingController.deleteAll);
 
+router.get("/rooms/booked", roomBookingController.roomBookedDates);
+
 router.route("/roomreservation/:id").delete(roomBookingController.deleteOne);
 
 module.exports = router;

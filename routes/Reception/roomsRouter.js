@@ -8,6 +8,7 @@ router
 	.post(roomsController.create)
 	.get(roomsController.getAll)
 	.delete(roomsController.deleteAll);
+router.route("/rooms/roomstatus").get(roomsController.getRoomsByStatus);
 router
 	.route("/rooms/one")
 	.get(roomsController.getOne)
